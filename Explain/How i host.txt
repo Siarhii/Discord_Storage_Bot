@@ -1,0 +1,2 @@
+nohup node src/index.js & -> this command to run returd bot even after closing ssh terminal in local machine
+13129 - current PID for the returdBot node application

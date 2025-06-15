@@ -1,0 +1,44 @@
+1.Download node 20 and MySQL 8.0.37
+2.create "discord_files_messages" TABLE inside "dicord_storage_bot" DATABASE
+
+------------------------------------- TABLE SCHEMA ------------------------------------------------
+
+      CREATE TABLE Discord_Files_Messages (
+        filename VARCHAR(50) NOT NULL, 
+        is_Encrypted BOOLEAN NOT NULL DEFAULT 0,
+        datetime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        totalParts INT NOT NULL,
+        attachmentsMessageID JSON NOT NULL
+        hashedPassword VARCHAR(64) NOT NULL,
+        fromUser Varchar(20) ,
+        downloaded VARCHAR(20) NOT NULL DEFAULT 0,
+        filesize BIGINT NOT NULL,
+        filetype VARCHAR(20) NOT NULL,
+        INDEX filename_idx (filename)  
+      );
+
+----------------------------------------------------------------------------------------------------
+
+3.Add .env file which will contain, 
+  PORT = 8080
+  TOKEN = discord bot token (from discord dev portal)
+  CHANNEL_ID = whichever discord channel you want to use for storing your files (make sure to give permissions to your bot)
+
+  //for auth
+  MONGO_URI = MONGO_URI ( your local or atlas mongo db uri)
+  REFRESH_TOKEN_SECRET = secret for JWT refresh token
+  ACCESS_TOKEN_SECRET = secret for JWT access token
+
+  //for storing file metadata
+    SQL_PASSWORD = your sql password , my user is "root",if you have created a different user you can add it in src/config/sqlconfig.js file
+
+  //to enable file generation email notification 
+  WEBSITELINK = "returdbot.duckdns.org:8080"  //irrelevant mostly,unless you want to use email service as well,will only be used when you want to interact with bot via discord commands in discord app,it will send this link to download the files
+  EMAIL = gmail that you want to send notification emails from (you can use any email service provider) (just make sure to enable the thing where they allow you to send emails via thier api,im using googleapis to send gmail)
+  PASSWORD = that gmail password 
+  GMAIL_API_CLIENT_ID = you need this to use googleapis for different apis
+  GMAIL_API_CLIENT_SECRET = same reason as above
+  GMAIL_API_REFRESH_TOKEN = same reason as above
+
+4.Install necessary pakages
+5.yay

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Processing Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        .bg-gradient-dark {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+        }
+        .bg-gradient-button {
+            background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+        }
+        .bg-gradient-button:hover {
+            background: linear-gradient(135deg, #4a4a4a 0%, #3a3a3a 100%);
+        }
+        .glow {
+            box-shadow: 0 0 15px rgba(66, 153, 225, 0.5);
+        }
+
+        .disabled {
+            opacity: 0.6;
+        }
+
+        .disabled:hover .text-gray-300 {
+            color: #9CA3AF !important; /* tailwind's gray-300 */
+        }
+    </style>
+</head>
+<body class="bg-black text-gray-300 min-h-screen bg-gradient-dark">
+    <nav class="bg-dark-800 border border-gray-700" style="background-image: url('navbarImage.jpeg');">
+        <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+          <div class="relative flex h-16 items-center justify-between">
+            <div class="flex items-center justify-start flex-1">
+              <a href="/" class="text-white text-lg font-bold">&nbsp;&nbsp;&nbsp;Returd Bot</a>
+            </div>
+            <div class="hidden sm:flex sm:ml-6 space-x-4">
+              <a href="/" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Home</a>
+              <a href="/upload/uploadWithEncrypt" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Upload</a>
+              <a href="/storedFilesPage" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Stored Files</a>
+              <a href="/About" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">About</a>
+            </div>
+            <div class="absolute inset-y-0 right-0 flex items-center sm:hidden">
+              <button type="button" class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false" id="mobile-menu-button">
+                <span class="sr-only">Open main menu</span>
+                <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+                <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="sm:hidden hidden" id="mobile-menu">
+          <div class="space-y-1 px-2 pb-3 pt-2">
+            <a href="/" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Home</a>
+            <a href="/upload/uploadWithEncrypt" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Upload</a>
+            <a href="/storedFilesPage" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Stored Files</a>
+            <a href="/About" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">About</a>
+          </div>
+        </div>
+    </nav>
+
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="container mx-auto p-8 bg-gray-900 rounded-lg shadow-xl max-w-md border border-gray-800 bg-opacity-80 backdrop-filter backdrop-blur-sm">
+            <h1 class="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">File Download</h1>
+            
+            <div class="mb-6">
+                <h1 class="text-xl font-semibold mb-4 text-gray-400">File Details</h1>
+                <div class="bg-black bg-opacity-50 p-4 rounded-lg border border-gray-800">
+                    <p class="mb-2"><span class="font-medium text-gray-500">Filename:</span> <span id="filename" class="text-gray-300"><%= data.fileName %></span></p>
+                    <p class="mb-2"><span class="font-medium text-gray-500">File Size:</span> <span id="filesize" class="text-gray-300"><%= data.fileSize %> MB</span></p>
+                    <p class="mb-2"><span class="font-medium text-gray-500">From User:</span> <span id="filetype" class="text-gray-300"><%= data.fromUser %></span></p>
+                    <p class="mb-2"><span class="font-medium text-gray-500">Date : </span> <span id="filesize" class="text-gray-300"><%= data.readableFormatDate %></span></p>
+                    <p class="mb-2"><span class="font-medium text-gray-500">Password Protected : </span> <span id="filesize" class="text-gray-300"><%= data.is_Encrypted %></span></p>
+                    <p class="mb-2"><span class="font-medium text-gray-500">Estimated Processing Time : </span> <span id="filesize" class="text-gray-300"><%= data.downloadTime %> second(s)</span></p>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-400">Password</h2>
+                <div class="relative">
+                    <input type="password" id="password" name="password" required class="w-full px-3 py-2 bg-black bg-opacity-50 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300" placeholder="Enter password">
+                    <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+                        <svg class="h-6 w-6 text-gray-400" fill="none" id="eyeIcon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 640 512">
+                            <path fill="currentColor" d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+                <p id="passwordError" class="text-red-500 mt-2 text-sm hidden">Invalid or incorrect password</p>
+            </div>
+            
+            <div class="mb-4">
+                <label class="inline-flex items-center group cursor-pointer">
+                    <div class="relative">
+                        <input type="checkbox" id="emailNotification" class="sr-only">
+                        <div class="w-6 h-6 bg-gray-700 rounded-md border border-gray-600 group-hover:border-blue-500 transition-colors duration-200">
+                            <svg id="checkboxSvg" class="w-4 h-4 text-blue-500 opacity-0 absolute left-1 top-1 transition-opacity duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="ml-3 text-gray-300 group-hover:text-blue-400 transition-colors duration-200">Notify me by email when processing is complete (Only for files above 100mb)</span>
+                </label>
+            </div>
+            <div id="emailInputContainer" class="mb-4 hidden">
+                <input type="email" id="emailInput" class="w-full px-3 py-2 bg-black bg-opacity-50 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300" placeholder="Enter your email">
+            </div>
+
+            <button onclick="startProcessing()" id="processButton" class="w-full bg-gradient-button text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 transform hover:scale-105">
+                Start Processing
+            </button>
+
+            <div id="loadingSection" class="hidden mt-6 text-center">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 glow"></div>
+                <p class="mt-2 text-gray-400"><span id="processingEstimatedTimeSpan">Processing... Estimated time : </span><span id="estimatedTime" class="font-bold text-blue-400"></span><span id="secondsSpan"> seconds</span></p>
+            </div>
+
+            <div id="resultSection" class="hidden mt-6">
+                <p class="text-green-500 mb-2 font-bold">Processing complete!</p>
+                <div class="flex items-center">
+                    <a href="#" id="generatedLink" class="text-blue-400 emonhover:text-blue-300 underline mr-4">Click here to access your file</a>
+                    <button id="copyButton" class="bg-gray-800 text-white text-xs px-2 py-1 rounded-full hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600 transition duration-150 ease-in-out">
+                        Copy Link
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+
+        let ifLinkGenerated = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailNotificationCheckbox = document.getElementById('emailNotification');
+            const emailInputContainer = document.getElementById('emailInputContainer');
+            const checkboxSvg = document.getElementById('checkboxSvg');
+
+            emailNotificationCheckbox.addEventListener('change', function() {
+                if (this.disabled) {
+                    return;
+                }
+                emailInputContainer.classList.toggle('hidden', !this.checked);
+                checkboxSvg.classList.toggle('opacity-0', !this.checked);
+                checkboxSvg.classList.toggle('opacity-100', this.checked);
+            });
+
+            const filesize = "<%= data.fileSize %>";
+            if(filesize !== "Not available"){
+                const filesizeInt = parseInt(filesize, 10);
+                if(filesizeInt < 100){
+                    disableEmailElements();
+                }
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const copyButton = document.getElementById('copyButton');
+            const generatedLink = document.getElementById('generatedLink');
+
+            copyButton.addEventListener('click', function() {
+                navigator.clipboard.writeText(generatedLink.href).then(function() {
+                    copyButton.textContent = 'Copied!';
+                    copyButton.classList.add('bg-green-600');
+                    copyButton.classList.remove('bg-gray-800', 'hover:bg-gray-700');
+
+                    setTimeout(function() {
+                        copyButton.textContent = 'Copy';
+                        copyButton.classList.remove('bg-green-600');
+                        copyButton.classList.add('bg-gray-800', 'hover:bg-gray-700');
+                    }, 2000);
+                }).catch(function(err) {
+                    console.error('Failed to copy: ', err);
+                });
+            });
+        });
+
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        document.getElementById('togglePassword').addEventListener('click', function (e) {
+            const password = document.getElementById('password');
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            
+            const eyeIcon = document.getElementById('eyeIcon');
+            if (type === 'password') {
+                eyeIcon.innerHTML = `
+                    <path fill="currentColor" d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z">
+                    </path>
+                `;
+            } else {
+                eyeIcon.innerHTML = `
+                    <path fill="currentColor" d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z">
+                    </path>
+                `;
+            }
+        });
+
+        document.getElementById('password').addEventListener('input', function() {
+            document.getElementById('passwordError').classList.add('hidden');
+        });
+
+        function startProcessing() {
+            const password = document.getElementById('password').value;
+            const passwordError = document.getElementById('passwordError');
+            const emailNotificationCheckbox = document.getElementById('emailNotification');
+            const emailInput = document.getElementById('emailInput');
+            const emailNotificationChecked = emailNotificationCheckbox.checked;
+            const email = emailNotificationChecked ? emailInput.value : null;
+            
+            if (!password || password.trim() === "" || password.length > 20) {
+                passwordError.classList.remove('hidden');
+                return;
+            }
+            
+            if (emailNotificationChecked && (!email || !isValidEmail(email))) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            passwordError.classList.add('hidden');
+            document.getElementById('processButton').classList.add('hidden');
+            document.getElementById('loadingSection').classList.remove('hidden');
+            
+            const fromUser = "<%= data.fromUser %>";
+            const filename = "<%= data.fileName %>";
+            const datetime = "<%= data.fileUploadDate %>";
+            const filesize = "<%= data.fileSize %>";
+
+            disableEmailElements();
+            
+            doChecksAndSendRefreshReq()
+            .then((accessToken) => {
+                validatePasswordAndDownload(filename, fromUser, datetime, password, filesize, accessToken, email, filesize)
+                .then((link, countdownInterval) => {
+                    clearInterval(countdownInterval);
+                    document.getElementById('generatedLink').href = link;
+                    document.getElementById('loadingSection').classList.add('hidden');
+                    document.getElementById('resultSection').classList.remove('hidden');
+                })
+                .catch((err) => {
+                    console.error("Error in validatePasswordAndDownload:", err);
+                    handleProcessingError();
+                    enableEmailElements();
+                });
+            })
+            .catch((err) => {
+                console.error("Error in doChecksAndSendRefreshReq:", err);
+                handleProcessingError();
+                enableEmailElements();
+            });
+        }
+
+function disableEmailElements() {
+    const emailNotificationCheckbox = document.getElementById('emailNotification');
+    const emailInput = document.getElementById('emailInput');
+    
+    emailNotificationCheckbox.disabled = true;
+    emailInput.disabled = true;
+    
+    const checkboxDiv = emailNotificationCheckbox.nextElementSibling;
+    checkboxDiv.classList.remove('group-hover:border-blue-500');
+    checkboxDiv.classList.add('bg-gray-800', 'border-gray-700');
+    emailNotificationCheckbox.parentElement.parentElement.classList.add('disabled', 'cursor-not-allowed');
+    emailInput.classList.add('bg-gray-800', 'text-gray-500', 'cursor-not-allowed');
+}
+
+function enableEmailElements() {
+    const emailNotificationCheckbox = document.getElementById('emailNotification');
+    const emailInput = document.getElementById('emailInput');
+    
+    emailNotificationCheckbox.disabled = false;
+    emailInput.disabled = false;
+    
+    const checkboxDiv = emailNotificationCheckbox.nextElementSibling;
+    checkboxDiv.classList.add('group-hover:border-blue-500');
+    checkboxDiv.classList.remove('bg-gray-800', 'border-gray-700');
+    emailNotificationCheckbox.parentElement.parentElement.classList.remove('disabled', 'cursor-not-allowed');
+    emailInput.classList.remove('bg-gray-800', 'text-gray-500', 'cursor-not-allowed');
+}
+
+        function handleProcessingError() {
+            const emailNotificationCheckbox = document.getElementById('emailNotification');
+            const emailInput = document.getElementById('emailInput');
+            const checkboxDiv = emailNotificationCheckbox.nextElementSibling;
+
+            // Re-enable checkbox and email input
+            emailNotificationCheckbox.disabled = false;
+            emailInput.disabled = false;
+
+            // Restore visual state
+            checkboxDiv.classList.add('group-hover:border-blue-500');
+            checkboxDiv.classList.remove('bg-gray-800', 'border-gray-700');
+            emailNotificationCheckbox.parentElement.parentElement.classList.remove('disabled', 'cursor-not-allowed');
+            emailInput.classList.remove('bg-gray-800', 'text-gray-500', 'cursor-not-allowed');
+
+            // Show error message to user
+            alert("An error occurred during processing. Please try again.");
+
+            // Reset UI
+            document.getElementById('processButton').classList.remove('hidden');
+            document.getElementById('loadingSection').classList.add('hidden');
+        }
+
+        function isValidEmail(email) {
+            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+        function startTimer(filesize){
+            let timeLeft = "<%= data.downloadTime%>"
+            const estimatedTimeElement = document.getElementById('estimatedTime');
+            
+            const countdown = setInterval(() => {
+                timeLeft--;
+                estimatedTimeElement.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    if(!ifLinkGenerated){
+                        let sentences = [
+                            "Still waiting? Guess your file thinks it's a VIP. Don't worry, it will eventually grace us with its presence.",
+                            "Your file is taking its time, as if it has all the time in the world. Maybe try being more patient?",
+                            "Oh, you expected quick processing? How adorable. Just sit tight, it'll be done when it's done.",
+                            "Patience is a virtue. Clearly, your file missed that memo. Give it a moment, or two... or ten.",
+                            "Wow, your file is really taking its sweet time, isn’t it? Maybe it's doing yoga or something. Hang tight!",
+                            "Your file must think it's on vacation. It's taking longer than expected, but hey, good things come to those who wait.",
+                            "Still waiting? Maybe you should go write a novel or something. Your file will be ready... eventually.",
+                            "If only your file had the urgency you do. Unfortunately, it’s on its own schedule. Hang in there!",
+                            "Oh, did you think this would be quick? Bless your heart. Your file is still processing, so take a deep breath.",
+                            "Isn’t waiting fun? Your file seems to think so. It’s taking longer than expected, so find a way to pass the time."
+                        ]
+                        const random = Math.floor(Math.random() * (sentences.length - 1 + 1)) + 1;
+                        document.getElementById('secondsSpan').innerText = "";
+                        document.getElementById('processingEstimatedTimeSpan').innerText = "";
+                        estimatedTimeElement.textContent = sentences[random];
+                        return;
+                    }
+                    document.getElementById('loadingSection').classList.add('hidden');
+                    document.getElementById('resultSection').classList.remove('hidden');
+                }
+            }, 1000);
+            return countdown;
+        }
+
+        function validatePasswordAndDownload(fileName,fromUser,datetime,password,filesize,accessToken,emailForNotification,fileSize){
+            return new Promise ((resolve,reject)=>{
+                const countdownInterval = startTimer(filesize);
+                axios.post(`/download/downloadProcessRequest`, {
+                    fileName,
+                    fromUser,
+                    datetime,
+                    password,
+                    emailForNotification,
+                    fileSize
+                },
+                {
+                    headers: {
+                       'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                    timeout:0,
+                })
+                .then((response)=>{
+                    if(!response.data){
+                        reject(false);
+                        return;
+                    }
+                    else if (response.status === 401){
+                        passwordError.classList.remove('hidden');
+                        reject(false);
+                        return;
+                    }
+                    ifLinkGenerated = true;
+                    resolve(response.data.link,countdownInterval);
+                })
+                .catch((error)=>{
+                    document.getElementById('processButton').classList.remove('hidden');
+                    document.getElementById('loadingSection').classList.add('hidden');
+                    document.getElementById('resultSection').classList.add('hidden');
+
+                    if (error.response.status === 401){
+                        clearInterval(countdownInterval);
+                        passwordError.classList.remove('hidden');
+                        return;
+                    }
+
+                    if(error.response.status === 429){
+                        alert("Too many requests from this IP,Try again after some time.");
+                        return;
+                    }
+                    console.log('Error during sendApiRequest :', error);
+                    reject(false);
+                });
+            })
+        }
+
+        function checkTokenValidity(token) {
+            if(!token){
+                console.log('Token Not Found');
+                return false;
+            }
+            try {
+                const decoded = jwt_decode(token);
+                if (!decoded) {
+                    console.log('Invalid token');
+                    return false;
+                }
+                const currentTime = Date.now() / 1000; 
+                if (decoded.exp < currentTime) {
+                    console.log('Token expired');
+                    return false;
+                }
+                console.log('Token is valid');
+                return true;
+            } catch (error) {
+                console.error('Error decoding or verifying token:', error);
+                return false;
+            }
+        }
+
+        function sendRefreshTokenReq (refreshToken){
+            return new Promise ((resolve,reject)=>{
+                axios.post('/auth/refreshToken', { refreshToken } ,{
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    timeout:10000
+                })
+                .then((response)=>{
+                    if(!response.data){
+                        reject();
+                    }
+                    resolve(response.data);
+                    console.log("Refreshed Tokens")
+                })
+                .catch((error)=>{
+                    if(error){
+                        reject(error);
+                    }
+                });
+            }) 
+        }
+
+        function doChecksAndSendRefreshReq(){
+            return new Promise ((resolve,reject)=>{
+                const accessToken = localStorage.getItem('accessToken');
+                if(!checkTokenValidity(accessToken)){
+                    const refreshToken = localStorage.getItem('refreshToken');
+                    if(!checkTokenValidity(refreshToken)){
+                        alert(`Please Login first,You will be redirected to login page.`)
+                        window.location.href = "/auth";
+                        reject();
+                        return;
+                    }
+                    sendRefreshTokenReq(refreshToken)
+                    .then((tokens)=>{
+                        localStorage.setItem('accessToken', tokens.accessToken);
+                        localStorage.setItem('refreshToken', tokens.refreshToken);
+                        resolve(tokens.accessToken);
+                    })
+                    .catch((err)=>{
+                        alert(`An error Occured,Please Login Again,You will be redirected to Login Page.`)
+                        window.location.href = '/auth'
+                        reject();
+                    }) 
+                }
+                else {
+                    resolve(accessToken);
+                }
+            })
+        }
+    </script>
+</body>
+</html>

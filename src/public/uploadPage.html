@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            /* Apply the font to the entire body */
+        }
+
+        .maindiv {
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(to right, #1A1A1A, grey);
+            /* background-image: url('/images/bh.png'); */
+            color: black;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            width: 300px;
+            margin: 2px auto;
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .bar {
+            height: 20px;
+            background-color: green;
+            border-radius: 40px;
+            border: 1px solid #ccc;
+            transition: width 0.3s ease;
+            animation: load 3s normal forwards;
+        }
+
+        #barProgress {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        #mainBar {
+            background-color: white;
+        }
+
+        h3 {
+            margin: 1px;
+            margin-top: 0px;
+            padding: 0
+        }
+
+        h4 {
+            margin: 0px;
+            margin-top: 1px;
+            margin-bottom: 2px;
+        }
+
+        .filecard {
+            background-color: #333333;
+            color: white;
+            border-radius: 50px;
+            padding: 20px;
+            margin: 10px;
+            border: 1px solid grey;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .passwordContainer {
+            margin: 5px;
+            width: 38%;
+            background: #444444;
+            padding: 4px;
+            padding-left: 5px;
+            border-radius: 8px;
+            border: 1px solid rgb(14, 15, 16);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            opacity: 0.8;
+        }
+
+        #form-group {
+            display: flex;
+            align-items: center;
+        }
+
+        #form-group label {
+            margin-right: 5px;
+        }
+
+        .passwordInput {
+            display: none;
+            margin-left: 5px;
+            width: 35%;
+        }
+
+
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #4A5568 #EDF2F7;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #EDF2F7;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #4A5568;
+            border-radius: 20px;
+            border: 3px solid #EDF2F7;
+        }
+
+        .hover-scale {
+            transition: transform 0.2s;
+        }
+
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <nav class="bg-dark-800" style="border:1px solid grey;  background-image: url('/images/navbarImage.jpeg'); ">
+        <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+            <div class="relative flex h-16 items-center justify-between">
+                <div class="flex items-center justify-start flex-1">
+                    <a href="/" class="text-white text-lg font-bold">&nbsp&nbsp&nbspReturd Bot</a>
+                </div>
+                <div class="hidden sm:flex sm:ml-6 space-x-4">
+                    <a href="/"
+                        class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white hover-scale">Home</a>
+                    <a href="/storedFilesPage"
+                        class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white hover-scale">Stored
+                        Files</a>
+                    <a href="/About"
+                        class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white hover-scale">About</a>
+                </div>
+                <div class="absolute inset-y-0 right-0 flex items-center sm:hidden">
+                    <!-- Mobile menu button -->
+                    <button type="button"
+                        class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                        aria-controls="mobile-menu" aria-expanded="false" id="mobile-menu-button">
+                        <span class="sr-only">Open main menu</span>
+
+                        <!-- Icon when menu is closed. -->
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+
+                        <!-- Icon when menu is open. -->
+                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="sm:hidden hidden" id="mobile-menu">
+            <div class="space-y-1 px-2 pb-3 pt-2">
+                <!-- Mobile menu links -->
+                <a href="/"
+                    class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white hover-scale">Home</a>
+                <a href="/storedFilesPage"
+                    class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white hover-scale">Stored
+                    Files</a>
+                <a href="/About"
+                    class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white hover-scale">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="maindiv">
+        <div id="dropZone" class="hover-scale"
+            style="background: linear-gradient(to left, rgb(3, 3, 8),grey); opacity: 0.8; margin-top:20px; width: 350px; height: 200px; border-radius: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; border: 2px solid grey; cursor: pointer; position: relative;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 9l-5 5-5-5M12 12.8V2.5" />
+            </svg>
+            <p style="margin-top: 16px; font-size: 16px; text-align: center;">Drag and drop files here</p>
+            <form id="uploadForm" action="/uploadEncrypt" method="post" enctype="multipart/form-data"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                <input type="file" name="files" multiple style="width: 100%; height: 100%; cursor: pointer;"
+                    id="fileInput" />
+            </form>
+        </div>
+
+        <div id="fileCount" style="margin-top: 16px; text-align: center; font-size: 16px; color: #c0c0c0;"></div>
+
+        <!-- <div> <input id="usernameInput" style="border-radius:4px; background:#444444; margin-top: 10px;  color: #fff; text-emphasis-color: white; text-align: center; border: 1px solid grey;" type="text" placeholder=" Enter Your Username "></div> -->
+        <div id="fileList" style="margin-top: 16px; background: #ccc;"></div>
+
+        <div id="uploadDiv"
+            style="background-color: #333333; margin:2px; padding:0px; border-radius: 20px; width:400px; border: 2px solid grey;">
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('mobile-menu-button').addEventListener('click', function () {
+            var menu = document.getElementById('mobile-menu');
+            var svgMenu = this.querySelector('svg:nth-child(1)');
+            var svgClose = this.querySelector('svg:nth-child(2)');
+
+            menu.classList.toggle('hidden');
+            svgMenu.classList.toggle('hidden');
+            svgClose.classList.toggle('hidden');
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileCountDisplay = document.getElementById('fileCount');
+        const dropZone = document.getElementById('dropZone');
+        const uploadDiv = document.getElementById('uploadDiv');
+
+        fileInput.addEventListener('change', (event) => {
+            const files = event.target.files;
+            const fileCount = files.length;
+            const s = "[@!#$%^&*()<>?}{~:]`';/|,";
+            uploadDiv.innerHTML = ``;
+            uploadDiv.style.border = "thin solid grey";
+            uploadDiv.style.padding = "5px"
+            //check for more than 10 file uploads.
+            if (fileCount > 10) {
+                alert(`Concurrently uploading more than 10 files isnt supported yet.\nTotal files selected : ${fileCount}`)
+                return;
+            }
+
+            //checking if the files have special characters in it
+            for (let i = 0; i < fileCount; i++) {
+                const filename = files[i].name;
+                const fileSize = files[i].size;
+                const fileSizeInMB = (fileSize / (1024 * 1024)).toFixed(2);
+                let uploadSizeLimit = 1 * 1024 * 1024 * 1024;
+                if (filename.length > 40) {
+                    alert(`FileName : ${filename} is more than 40 characters long.\nTotal characters : ${filename.length}\nPls reduce the Filename length.`);
+                    return;
+                    break;
+                }
+                if (uploadSizeLimit < fileSize) {
+                    alert(`You can only upload files below 1 GB ,\nFileName : ${filename} is of ${fileSizeInMB} MB`);
+                    return;
+                    break;
+                }
+                for (let j = 0; j < filename.length; j++) {
+                    if (s.includes(filename.charAt(j)) || filename.charAt(j) === `"`) {
+                        alert(`selected file - ${filename} \ncontains special character - "${filename.charAt(j)}"\nPlease change the name and try again.`)
+                        return;
+                        break;
+                    }
+                }
+            }
+
+            fileCountDisplay.textContent = fileCount === 0 ? 'No files selected' : `${fileCount} file(s) selected`;
+            fileCountDisplay.style.marginTop = "15px";
+
+            //adding scroll if more than 4 files are selected
+            const fileArray = Array.from(files);
+            if (fileArray.length > 3) {
+                uploadDiv.classList.add('custom-scrollbar');
+                uploadDiv.style.overflowY = 'scroll';
+            } else {
+                uploadDiv.classList.remove('custom-scrollbar');
+                uploadDiv.style.overflowY = 'auto';
+            }
+
+            fileArray.forEach((file, index) => {
+                uploadDiv.innerHTML += `
+        <div class="filecard">
+            <div style="display: flex; justify-content:start; flex-direction: column;">
+                <h3>Uploading File : <span>${file.name}</span></h3>
+                <h4>File size : <span>${(file.size / Math.pow(1024, 2)).toFixed(2)}mb</span></h4>
+                <div id="progressPercentage" style="margin:0px; margin-left:8%;  margin-top: 10px;"></div>
+            </div>
+            <section class="container">
+                <div class="bar" id="barProgress"><span id="progressPercentage"></span></div>
+                <div class="bar" id="mainBar"></div>
+            </section> 
+    
+            <div class="container">
+                <div class="passwordContainer" id="passwordContainer${index}">
+                    <div id="form-group">
+                        <label for="customPassword">Password:</label>
+                        <input style="width:60% border:2px solid black" type="checkbox" id="customPassword${index}" name="customPassword">
+                    </div>
+                    <div class="passwordInput" class="container" id="passwordInput${index}">
+                        <input style="border-radius:4px; margin:2px; border-color:transparent; width:175%; color:black; text-align:center; type="text" placeholder="Enter your password">
+                    </div>
+                </div> 
+            </div>
+           
+            <button type="submit" style="background:#234d6f; border-radius:6px; color:#fff;" id=button${index}>&nbsp;&nbsp;Upload&nbsp;&nbsp;</button>
+        </div>`;
+            });
+
+            const fileUploadCards = document.querySelectorAll('.filecard');
+            fileUploadCards.forEach((filecard, index) => {
+                const bar = filecard.querySelector("#barProgress");
+                let rect = bar.getBoundingClientRect();
+                const barBackgroundBody = filecard.querySelector("#mainBar");
+                const percentageSpan = filecard.querySelector("#progressPercentage");
+                const button = filecard.querySelector(`button`)
+
+                const customPasswordCheckbox = filecard.querySelector(`#customPassword${index}`);
+                const passwordInputDiv = filecard.querySelector(`#passwordInput${index}`);
+                const passwordContainer = filecard.querySelector(`#passwordContainer${index}`)
+                customPasswordCheckbox.addEventListener('change', function (e) {
+                    if (e.target.checked) {
+                        passwordContainer.style.width = `98%`;
+                        passwordInputDiv.style.display = 'inline-block';
+
+                    } else {
+                        passwordContainer.style.width = `38%`;
+                        passwordInputDiv.style.display = 'none';
+                    }
+                });
+
+                button.style.margin = "5px";
+                barBackgroundBody.style.top = rect.top + "px";
+                barBackgroundBody.style.left = rect.left + "px";
+                barBackgroundBody.style.width = rect.width;
+
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    const fileindex = parseInt(button.id.split('button')[1])
+                    const File = fileInput.files[fileindex];
+                    const fileName = File.name;
+                    let password = fileUploadCards[fileindex].querySelectorAll(`input`)[1].value;
+
+                    if (!password || password === "undefined") {
+                        password = 'turd'
+                    }
+                    if (password?.length > 20) {
+                        alert("Password or Username cannot be more than 20 characters long");
+                        return
+                    }
+
+                    //input 0 (the checkbox)
+                    fileUploadCards[fileindex].querySelectorAll(`input`)[0].disabled = true;
+                    fileUploadCards[fileindex].querySelectorAll(`input`)[0].style.background = "grey";
+                    fileUploadCards[fileindex].querySelectorAll(`input`)[0].style.color = "#1d344a";
+                    fileUploadCards[fileindex].querySelectorAll(`input`)[0].style.cursor = "not-allowed";
+
+                    //input 1 (where password is typed)
+                    fileUploadCards[fileindex].querySelectorAll(`input`)[1].disabled = true;
+                    fileUploadCards[fileindex].querySelectorAll(`input`)[1].style.background = "grey";
+                    fileUploadCards[fileindex].querySelectorAll(`input`)[1].style.color = "#1d344a";
+                    fileUploadCards[fileindex].querySelectorAll(`input`)[1].style.cursor = "not-allowed";
+
+                    button.disabled = true;
+                    button.style.background = "grey";
+                    button.style.color = "#1d344a";
+                    button.style.cursor = "not-allowed";
+
+                    let formData = new FormData();
+                    formData.append('files', File, fileName);
+                    formData.append('password', password);
+
+                    const accessToken = localStorage.getItem('accessToken');
+
+                    if (!checkTokenValidity(accessToken)) {
+                        const refreshToken = localStorage.getItem('refreshToken');
+                        if (!checkTokenValidity(refreshToken)) {
+                            alert(`Please Login to upload,You will be redirected to login page.`)
+                            window.location.href = "/auth";
+                            return;
+                        }
+                        sendRefreshTokenReq(refreshToken)
+                            .then((tokens) => {
+                                localStorage.setItem('accessToken', tokens.accessToken);
+                                localStorage.setItem('refreshToken', tokens.refreshToken);
+                                uploadFile(tokens.accessToken);
+                            })
+                            .catch((err) => {
+                                alert(`An error Occured,Please Login Again,You will be redirected to Login Page.`)
+                                window.location.href = '/auth'
+                                return;
+                            })
+                    }
+                    else {
+                        uploadFile(accessToken);
+                    }
+
+                    function uploadFile(accessToken) {
+                        axios.post('/upload/uploadEncrypt', formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                                'Authorization': `Bearer ${accessToken}`,
+                            },
+                            timeout: 0,
+                            onUploadProgress: function (progressEvent) {
+                                let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                                updateBar(percentCompleted);
+                            }
+                        })
+                            .then((response) => {
+                                console.log('File uploaded successfully');
+                                if (response.status == 200) {
+                                    updateBar(100);
+                                }
+                            })
+                            .catch((error) => {
+                                console.error('Error uploading file:', error);
+                            });
+                    }
+                });
+
+                function updateBar(inputNumber) {
+                    if (inputNumber < 10) {
+                        barBackgroundBody.style.borderRadius = "8px";
+                    }
+                    else {
+                        barBackgroundBody.style.borderRadius = "40px";
+                    }
+                    if (inputNumber >= 100) {
+                        percentageSpan.innerHTML = `Uploaded &#10003;`;
+                    }
+                    else {
+                        percentageSpan.innerText = inputNumber + '%';
+                    }
+                    bar.style.width = inputNumber + "%";
+                }
+            })
+        });
+
+        function checkTokenValidity(token) {
+            if (!token) {
+                console.log('Token Not Found');
+                return false;
+            }
+            try {
+                const decoded = jwt_decode(token);
+                if (!decoded) {
+                    console.log('Invalid access token');
+                    return false;
+                }
+                const currentTime = Date.now() / 1000;
+                if (decoded.exp < currentTime) {
+                    console.log('Token expired');
+                    return false;
+                }
+                console.log('Token is valid');
+                return true;
+            } catch (error) {
+                console.error('Error decoding or verifying token:', error);
+                return false;
+            }
+        }
+
+        function sendRefreshTokenReq(refreshToken) {
+            return new Promise((resolve, reject) => {
+                axios.post('/auth/refreshToken', { refreshToken }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    timeout: 10000
+                })
+                    .then((response) => {
+                        if (!response.data) {
+                            reject();
+                        }
+                        resolve(response.data);
+                        console.log("Refreshed Tokens")
+                    })
+                    .catch((error) => {
+                        if (error) {
+                            console.error('Error refreshing the token :', error);
+                            reject(error);
+                        }
+                    });
+            })
+        }
+    </script>
+</body>
+
+</html>
