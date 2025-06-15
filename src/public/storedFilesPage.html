@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Returd Bot - Stored Files</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(to left, #1a1a1a,grey);
+        }
+        .hover-scale {
+            transition: transform 0.2s;
+        }
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+
+        .glowing-border {
+            position: relative;
+            border: 2px solid #333; /* Darker gray border */
+            box-shadow: 0 0 10px rgba(51, 51, 51, 0.4), /* lighter outer glow */
+                        0 0 20px rgba(51, 51, 51, 0.3), /* lighter middle glow */
+                        0 0 30px rgba(51, 51, 51, 0.2); /* lighter inner glow */
+        }
+
+        .glowing-border::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: inherit;
+            border: 2px solid rgba(51, 51, 51, 0.6);
+            box-shadow: 0 0 15px rgba(51, 51, 51, 0.4), /* lighter glow effect */
+                        0 0 20px rgba(51, 51, 51, 0.3),
+                        0 0 30px rgba(51, 51, 51, 0.2);
+            z-index: -1; /* Place the pseudo-element behind the content */
+        }
+
+        .disabled {
+            opacity: 0.6;
+        }
+
+        .disabled:hover .text-gray-300 {
+            color: #9CA3AF !important; /* tailwind's gray-300 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div id="passwordModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 overflow-y-auto h-full w-full hidden">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-xl shadow-2xl max-w-md w-full border border-gray-700">
+                <h3 id="modalTitle" class="text-2xl font-bold mb-6 text-white text-center">Enter Password</h3>
+                <input type="password" id="passwordInput" class="w-full py-3 px-4 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 mb-4" placeholder="Enter password">
+                <p id="passwordError" class="text-red-400 text-sm mb-4 hidden">Invalid password</p>
+                <p id="fileDeletedSuccess" class="text-green-400 text-sm mb-4 hidden">File deleted successfully</p>
+                <div class="flex justify-end space-x-4">
+                    <button id="cancelButton" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 transform hover:scale-105">
+                        Cancel
+                    </button>
+                    <button id="confirmButton" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 transform hover:scale-105">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <nav class="bg-dark-800 border border-gray-700" style="background-image: url('/images/navbarImage.jpeg');">
+        <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+          <div class="relative flex h-16 items-center justify-between">
+            <div class="flex items-center justify-start flex-1">
+              <a href="/" class="text-white text-lg font-bold">&nbsp;&nbsp;&nbsp;Returd Bot</a>
+            </div>
+            <div class="hidden sm:flex sm:ml-6 space-x-4">
+              <a href="/" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white hover-scale">Home</a>
+              <a href="/upload/uploadWithEncrypt" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white hover-scale">Upload</a>
+              <!-- <a href="#" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Stored Files</a> -->
+              <a href="/About" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white hover-scale">About</a>
+            </div>
+            <div class="absolute inset-y-0 right-0 flex items-center sm:hidden">
+              <button type="button" class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false" id="mobile-menu-button">
+                <span class="sr-only">Open main menu</span>
+                <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+                <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="sm:hidden hidden" id="mobile-menu">
+          <div class="space-y-1 px-2 pb-3 pt-2">
+            <a href="/" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white hover-scale">Home</a>
+            <!-- <a href="#" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Stored Files</a> -->
+            <a href="/upload/uploadWithEncrypt" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white hover-scale">Upload</a>
+            <a href="/About" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white hover-scale">About</a>
+          </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="mb-6 flex flex-col sm:flex-row justify-between items-center">
+            <h2 class="text-2xl font-bold mb-4 sm:mb-0">Stored Files</h2>
+            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                <select id="searchCriteria" class="border rounded px-2 py-1">
+                    <option value="all">Search All</option>
+                    <option value="filename">Search by Filename</option>
+                    <option value="username">Search by Username</option>
+                </select>
+                <input type="text" id="searchInput" placeholder="Enter search term" class="border rounded px-2 py-1">
+                <select id="sortSelect" class="border rounded px-2 py-1">
+                    <option value="date">Sort by date : Latest</option>
+                    <option value="dateA">Sort by date : Oldest</option>    
+                    <option value="size">Sort by size : Largest</option>
+                    <option value="sizeA">Sort by size : Smallest</option>
+                    <option value="nameA">Sort by name : A-Z</option>
+                    <option value="name">Sort by name : Z-A</option>
+                </select>
+            </div>
+        </div>
+        <div id="fileContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <!-- File cards will be inserted here -->
+        </div>
+    </div>
+
+    <div id="pagination" class="flex items-center justify-center space-x-2 my-4 bg-transparent-800 p-4 rounded-lg"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+
+        let files = [];
+        let totalPages ;
+        let currentPage = 1;
+        let currentSelectedSortBy = 'date';
+        let isDescending = true;
+
+        document.getElementById('searchInput').addEventListener('input', searchFiles);
+        document.getElementById('searchCriteria').addEventListener('change', searchFiles);
+        document.getElementById('sortSelect').addEventListener('change', sortFiles);
+    
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        doChecksAndSendRefreshReq()
+            .then((accessToken)=>{
+                sendApiRequest(currentPage,currentSelectedSortBy,isDescending,accessToken)
+                .catch((err)=>{
+                    console.log(err);
+                })
+            })
+            .catch((err)=>{
+                console.log(err);
+            })
+    
+        function createFileCard(file) {
+            const fileSize = file.filesize / (1024 * 1024);
+            const date = new Date(file.datetime);
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit', 
+            };
+            const readableFormatDate = date.toLocaleDateString('en-GB',options);
+            
+            return `
+                <div class="bg-white rounded-lg shadow-md p-4 rounded border border-grey-500 " style="background-color: rgba(0, 0, 0, 0.5); color:white; ">
+                    <h3 class="text-lg font-semibold mb-2">${file.filename}</h3>
+                    <p class="text-sm text-white-600">Size : ${fileSize.toFixed(1)} MB</p>
+                    <p class="text-sm text-white-600">Encrypted : ${file.is_Encrypted ? 'Yes' : 'No'}</p>
+                    <p class="text-sm text-white-600">User : ${file.fromUser}</p>
+                    <p class="text-sm text-white-600">Date : ${readableFormatDate}</p>
+                    <div class="mt-4 flex justify-between">
+                        <button onclick="downloadFile('${file.filename}','${file.datetime}',${file.filesize},${file.is_Encrypted},'${file.fromUser}')" class="bg-transparent text-blue-500 hover:bg-blue-50 hover:text-blue-700 px-3 py-1 rounded border border-blue-500">Download</button>
+                        <button onclick="promptPassword('${file.filename}','${file.datetime}','${file.fromUser}')" class="bg-transparent text-red-500 hover:bg-red-50 hover:text-red-700 px-3 py-1 rounded border border-red-500">Delete</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function downloadFile(filename,datetime,filesize,is_Encrypted,fromUser){
+            const params = new URLSearchParams({ filename, datetime , filesize , is_Encrypted , fromUser });
+            const url = `/download/downloadPage?${params.toString()}`;
+            window.location.href = url;
+        }
+    
+        function promptPassword(fileName,fileDate,fromUser) {
+            const modal = document.getElementById('passwordModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const passwordInput = document.getElementById('passwordInput');
+            const confirmButton = document.getElementById('confirmButton');
+            const cancelButton = document.getElementById('cancelButton');
+            const passwordError = document.getElementById('passwordError');
+
+            enableButtons();
+    
+            modalTitle.textContent = `Enter password to delete ${fileName}`;
+            modal.classList.remove('hidden');
+
+            function showErrorPasswordModal(message) {
+                passwordError.textContent = message;
+                passwordError.classList.remove('hidden');
+                setTimeout(()=>{
+                    passwordError.classList.add('hidden');
+                },3000)
+            }
+
+            const handleConfirm = () => {
+                const password = passwordInput.value;
+                if(!password || password === ""){
+                    showErrorPasswordModal("Please enter a password.");
+                    return;
+                }
+                doChecksAndSendRefreshReq()
+                .then((accessToken)=>{
+                    disableButtons();
+                    sendDeleteRequest(password,fileName,fileDate,fromUser,accessToken)
+                    .then(()=>{
+                        const fileDeletedSuccess = document.getElementById('fileDeletedSuccess');
+                        fileDeletedSuccess.classList.remove("hidden");
+                        setTimeout(()=>{
+                            closeModal();
+                        },1000);
+                        sendApiRequest(currentPage,currentSelectedSortBy,isDescending,accessToken)
+                        .catch((err)=>{
+                            console.log(err);
+                        })
+                    })
+                    .catch((message)=>{
+                        enableButtons()
+                        showErrorPasswordModal(message);
+                    })
+                })
+                .catch((err)=>{
+                    enableButtons()
+                    console.log(err);
+                })
+            }
+    
+            const closeModal = () => {
+                modal.classList.add('hidden');
+                fileDeletedSuccess.classList.add("hidden");
+                passwordError.classList.add('hidden');
+                passwordInput.value = '';
+                confirmButton.removeEventListener('click', handleConfirm);
+                cancelButton.removeEventListener('click', closeModal);
+            };
+
+            confirmButton.addEventListener('click', handleConfirm);
+            cancelButton.addEventListener('click', closeModal);
+        }
+    
+        function renderFiles(filesToRender) {
+            const container = document.getElementById('fileContainer');
+            container.innerHTML = filesToRender.map(createFileCard).join('');
+        }
+    
+        function searchFiles() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const searchCriteria = document.getElementById('searchCriteria').value;
+            
+            const filteredFiles = files.filter(file => {
+                if (searchCriteria === 'all') {
+                    return file.filename.toLowerCase().includes(searchTerm) || 
+                           file.fromUser.toLowerCase().includes(searchTerm);
+                } else if (searchCriteria === 'filename') {
+                    return file.filename.toLowerCase().includes(searchTerm);
+                } else if (searchCriteria === 'username') {
+                    return file.fromUser.toLowerCase().includes(searchTerm);
+                }
+            });
+            
+            renderFiles(filteredFiles);
+        }
+    
+        function disableButtons() {
+            const confirmButton = document.getElementById('confirmButton');
+            const cancelButton = document.getElementById('cancelButton');
+
+            confirmButton.disabled = true;
+            cancelButton.disabled = true;
+
+            confirmButton.classList.add('disabled');
+            cancelButton.classList.add('disabled');
+        }
+
+        function enableButtons() {
+            const confirmButton = document.getElementById('confirmButton');
+            const cancelButton = document.getElementById('cancelButton');
+
+            confirmButton.disabled = false;
+            cancelButton.disabled = false;
+
+            confirmButton.classList.remove('disabled');
+            cancelButton.classList.remove('disabled');
+        }
+
+        function sortFiles() {
+            const sortBy = document.getElementById('sortSelect').value;
+
+            if(sortBy === 'date'){
+                currentSelectedSortBy = 'date'
+                isDescending = true;
+            }
+            else if(sortBy === 'dateA'){
+                 currentSelectedSortBy = 'date'
+                 isDescending = false;
+            }
+            else if(sortBy === 'size'){
+                 currentSelectedSortBy = 'size'
+                 isDescending = true;
+            }            
+            else if(sortBy === 'sizeA'){
+                 currentSelectedSortBy = 'size'
+                 isDescending = false
+            }
+            else if(sortBy === 'name'){
+                currentSelectedSortBy = 'name'
+                isDescending = true;
+            }
+            else if(sortBy === 'nameA'){
+                currentSelectedSortBy = 'name'
+                isDescending = false;
+            }
+            
+            doChecksAndSendRefreshReq()
+            .then((accessToken)=>{
+                sendApiRequest(currentPage,currentSelectedSortBy,isDescending,accessToken)
+                .catch((err)=>{
+                    console.log(err);
+                })
+            })
+            .catch((err)=>{
+                console.log(err);
+            })
+            renderFiles(files);
+        }
+
+        function createPagination(currentPage, totalPages) {
+          const pagination = document.getElementById('pagination');
+          pagination.innerHTML = '';
+        
+          const buttonClasses = "px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200";
+          const activeClasses = "bg-blue-600 text-white";
+          const inactiveClasses = "bg-gray-700 text-gray-300 hover:bg-gray-600";
+          const disabledClasses = "bg-gray-800 text-gray-500 cursor-not-allowed";
+        
+          const createButton = (text, page, disabled) => {
+            const button = document.createElement('button');
+            button.textContent = text;
+            button.disabled = disabled;
+            button.className = `${buttonClasses} ${disabled ? disabledClasses : inactiveClasses}`;
+            button.onclick = () => changePage(page,totalPages);
+            return button;
+          };
+        
+          pagination.appendChild(createButton('Prev', currentPage - 1, currentPage === 1));
+        
+          for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+            if (i > 0 && i <= totalPages) {
+              const pageButton = createButton(i, i, false);
+              if (i === currentPage) {
+                pageButton.className = `${buttonClasses} ${activeClasses}`;
+              }
+              pagination.appendChild(pageButton);
+            }
+          }
+        
+          pagination.appendChild(createButton('Next', currentPage + 1, currentPage === totalPages));
+        }
+        
+        function changePage(newPage,totalPages) {
+            if(newPage === currentPage){
+                return;
+            }
+            currentPage = newPage;
+            doChecksAndSendRefreshReq()
+            .then((accessToken)=>{
+                sendApiRequest(newPage,currentSelectedSortBy,isDescending,accessToken)
+                .catch((err)=>{
+                    console.log(err);
+                })
+            })
+            .catch((err)=>{
+                console.log(err);
+            })
+        }
+
+        function sendApiRequest(pageIndex,sortBy,isDescending,accessToken){
+            return new Promise((resolve,reject)=>{
+                axios.get(`/api/storedfiles`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                params: {
+                    pageIndex,
+                    sortBy,
+                    isDescending
+                },
+                timeout:60000,
+                })
+                .then((response)=>{
+                    if(!response.data){
+                        reject();
+                        return;
+                    }
+                    files = response.data.files;
+                    let pages = (response.data.totalNumOfFiles)/20;
+                    totalPages = Math.ceil(pages);
+                
+                    renderFiles(files);
+                    createPagination(pageIndex, totalPages);
+                })
+                .catch((error)=>{
+                    if (error.response && error.response.status === 429) {
+                      alert("Too many requests from this IP,Try again after some time");
+                    } 
+                    else{
+                        alert("Error Occured,Please Try again later.")
+                        console.log('Error during sendApiRequest :', error);
+                    }
+                });
+            })
+        }
+
+        function sendDeleteRequest(password,fileName,datetime,fromUser,accessToken){
+            return new Promise((resolve,reject)=>{
+                axios.delete(`/api/Delete`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                data: {
+                    fileName,
+                    fromUser,
+                    datetime,
+                    password
+                },
+                    timeout:60000,
+                })
+                .then((response)=>{
+                    resolve();
+                })
+                .catch((error)=>{
+                    if (error.response && error.response.status === 429) {
+                       reject("Too many requests from this IP,Try again after some time");
+                    } else if(error.response.status === 401){
+                        reject("Invalid Password")
+                    }
+                    else{
+                        reject("Error Occured,Please Try again later.")
+                    }
+                    console.log('Error during sendDeleteRequest :', error);
+                });
+            })
+        }
+
+    function checkTokenValidity(token) {
+        if(!token){
+            console.log('Token Not Found');
+            return false;
+        }
+        try {
+            const decoded = jwt_decode(token);
+            if (!decoded) {
+                console.log('Invalid token');
+                return false;
+            }
+            const currentTime = Date.now() / 1000; 
+            if (decoded.exp < currentTime) {
+                console.log('Token expired');
+                return false;
+            }
+            console.log('Token is valid');
+            return true;
+        } catch (error) {
+            console.error('Error decoding or verifying token:', error);
+            return false;
+        }
+    }
+
+    function sendRefreshTokenReq (refreshToken){
+        return new Promise ((resolve,reject)=>{
+            axios.post('/auth/refreshToken', { refreshToken } ,{
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                timeout:10000
+            })
+            .then((response)=>{
+                if(!response.data){
+                    reject();
+                }
+                resolve(response.data);
+                console.log("Refreshed Tokens")
+            })
+            .catch((error)=>{
+                if(error){
+                    reject(error);
+                }
+            });
+        }) 
+    }
+    function doChecksAndSendRefreshReq(){
+        return new Promise ((resolve,reject)=>{
+            const accessToken = localStorage.getItem('accessToken');
+            if(!checkTokenValidity(accessToken)){
+                const refreshToken = localStorage.getItem('refreshToken');
+                if(!checkTokenValidity(refreshToken)){
+                    alert(`Please Login first,You will be redirected to login page.`)
+                    window.location.href = "/auth";
+                    reject();
+                    return;
+                }
+                sendRefreshTokenReq(refreshToken)
+                .then((tokens)=>{
+                    localStorage.setItem('accessToken', tokens.accessToken);
+                    localStorage.setItem('refreshToken', tokens.refreshToken);
+                    resolve(tokens.accessToken);
+                })
+                .catch((err)=>{
+                    alert(`An error Occured,Please Login Again,You will be redirected to Login Page.`)
+                    window.location.href = '/auth'
+                    reject();
+                }) 
+            }
+            else {
+                resolve(accessToken);
+            }
+        })
+    }
+    </script>
+</body>
+</html>

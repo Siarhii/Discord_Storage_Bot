@@ -1,0 +1,9 @@
+1.The uploading or downloading feature will only work after 60 seconds of starting the server 
+    [as i need discord client to upload the file but the client is initialised in different file than the upload.routes.js (the one used for uploads) file,so i first need to import the client from index.js (Where it is initialised) to upload.routes.js but the initialisation takes time,so im using a simple settimeout callback to set client variable in upload.routes.js which will ensure than even though the upload.routes.js is loaded when the server starts - the client variable will always be loaded after the initialisation in index.js (unless it takes more than 60 seconds to initialise...)]
+    { A method that i can use to solve this includes a new "events" pakage,i will need to change the code and i dont know if it will impact the performance im trying to not use too many pakages if i can }
+
+
+//overall flow 
+//user uses r!post command,url is send to him
+//user uploads the file on website
+//file is saved with multer -> file is encypted -> divided into 20mb chunks -> uploaded sequencially on discord channel -> saved in METADATA txt file
